@@ -29,6 +29,7 @@ ax[0].set_xticks([])
 ax[0].set_yticks([])
 plt.tight_layout()
 # plt.show()
+
 # %%
 import matplotlib.pyplot as plt
 
@@ -196,5 +197,39 @@ plt.plot(range(len(epoch_train_acc)), epoch_train_acc, label="Training")
 plt.plot(range(len(epoch_valid_acc)), epoch_valid_acc, label="Validation")
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.lengend(loc="lower right")
+plt.legend(loc="lower right")
+plt.show()
+
+# %%
+
+valid_mse, valid_acc = compute_mse_and_acc(model, X_valid, y_valid)
+print(f"Validation accuracy: {valid_acc*100:.1f}%")
+
+# %%
+
+X_valid_subset = X_valid[:1000, :]
+y_valid_subset = y_valid[:1000]
+
+_, probas = model.forward(X_valid_subset)
+test_pred = np.argmax(probas,axis=1)
+
+misclassified_images = X_valid_subset[y_valid_subset != test_pred][:25]
+misclassified_labels = test_pred[y_valid_subset != test_pred][:25]
+
+corrrect_labels = y_valid_subset[y_valid_subset != test_pred][:25]
+
+fig, ax = plt.subplots(nrows=5, ncols=5, sharex=True, sharey=True, figsize=(8,8))
+
+ax = ax.flatten()
+
+for i in range(25):
+    img = misclassified_images[i].reshape(28,28)
+    ax[i].imshow(img, cmap='Greys', interpolation='nearest')
+    ax[i].set_title(f'{i+1}) '
+                    f'True: {corrrect_labels[i]}\n'
+                    f' Predicted: {misclassified_labels[i]}') 
+    
+ax[0].set_xticks([])
+ax[0].set_yticks([])
+plt.tight_layout()
 plt.show()
