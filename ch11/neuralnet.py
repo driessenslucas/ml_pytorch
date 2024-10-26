@@ -25,6 +25,7 @@ class NeuralNetMLP():
         super().__init__()
 
         self.num_classes = num_classes
+        self.num_hidden = num_hidden
 
         # Initialize the random number generator with a seed for reproducibility
         rng = np.random.RandomState(random_seed)
@@ -62,8 +63,8 @@ class NeuralNetMLP():
         # Apply sigmoid activation function
         a_output = sigmoid(z_output)
 
-        # Return both the linear combination and activated output
-        return z_output, a_output
+        # Return hidden and output activations
+        return a_hidden, a_output
 
     # Backward pass (backpropagation) to compute gradients
     def backward(self, x, a_hidden, a_output, y):

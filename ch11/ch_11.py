@@ -28,7 +28,7 @@ for i in range(10):
 ax[0].set_xticks([])
 ax[0].set_yticks([])
 plt.tight_layout()
-plt.show()
+# plt.show()
 # %%
 import matplotlib.pyplot as plt
 
@@ -42,7 +42,7 @@ for i in range(25):
 ax[0].set_xticks([])
 ax[0].set_yticks([])
 plt.tight_layout()
-plt.show()
+# plt.show()
 
 # %%
 # Train test split
@@ -50,7 +50,7 @@ from sklearn.model_selection import train_test_split
 
 X_temp, X_test, y_temp, y_test = train_test_split(X,y, test_size=10000, random_state=123, stratify=y)
 
-X_train, X_Valid, y_train, y_valid = train_test_split(X_temp, y_temp, test_size=5000, random_state=123, stratify=y_temp)
+X_train, X_valid, y_train, y_valid = train_test_split(X_temp, y_temp, test_size=5000, random_state=123, stratify=y_temp)
 # %%
 # import the neural network we just made
 from neuralnet import NeuralNetMLP, int_to_onehot
@@ -126,7 +126,7 @@ def compute_mse_and_acc(nnet, X, y, num_labels=10, minibatch_size=100):
     acc = correct_pred/num_examples
     return mse,acc
 
-mse, acc = compute_mse_and_acc(model, X_Valid, y_valid)
+mse, acc = compute_mse_and_acc(model, X_valid, y_valid)
 print(f"Initial valid MSE: {mse:.1f}")
 print(f"Initial valid accuracy: {acc*100:.1f}%")
 # %%
@@ -149,10 +149,10 @@ def train(model, X_train, y_train, X_valid, y_valid, num_epochs, learning_rate=0
                 model.backward(X_train_mini, a_h, a_out, y_train_mini)
 
             ### Update weights ###
-            model.weight_h -= learning_rate * d_loss__d_w_h
-            model.bias_h -= learning_rate * d_loss__d_b_h
-            model.weight_out -= learning_rate * d_loss__d_w_out
-            model.bias_out -= learning_rate * d_loss__d_b_out
+            model.weight_hidden -= learning_rate * d_loss__d_w_h
+            model.bias_hidden -= learning_rate * d_loss__d_b_h
+            model.weight_output -= learning_rate * d_loss__d_w_out
+            model.bias_output -= learning_rate * d_loss__d_b_out
 
         ### Epoch Logs ###
         train_mse, train_acc = compute_mse_and_acc(
@@ -173,3 +173,28 @@ def train(model, X_train, y_train, X_valid, y_valid, num_epochs, learning_rate=0
         )
 
     return epoch_loss, epoch_train_acc, epoch_valid_acc
+
+# %%
+# Actually training
+
+np.random.seed(123)
+epoch_loss, epoch_train_acc, epoch_valid_acc = train(
+    model, X_train, y_train, X_valid, y_valid, num_epochs=50, learning_rate=0.1
+)
+
+
+# %%
+
+plt.plot(range(len(epoch_loss)), epoch_loss)
+plt.ylabel("MSE")
+plt.xlabel("Epoch")
+plt.show()
+
+# %%
+
+plt.plot(range(len(epoch_train_acc)), epoch_train_acc, label="Training")
+plt.plot(range(len(epoch_valid_acc)), epoch_valid_acc, label="Validation")
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.lengend(loc="lower right")
+plt.show()
